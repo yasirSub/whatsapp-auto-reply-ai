@@ -76,17 +76,95 @@ whatsapp-auto-reply-ai/
 │   ├── config/             # Configuration files
 │   ├── controllers/        # Route controllers
 │   ├── models/             # Database models
+│   │   ├── aiModel.js      # AI model configuration
+│   │   ├── chatHistory.js  # Chat history storage
+│   │   ├── contact.js      # Contact management
+│   │   ├── messageTemplate.js # Response templates
+│   │   ├── scheduledMessage.js # Scheduled messages
+│   │   └── settings.js     # App settings
 │   ├── routes/             # API routes
+│   │   ├── aiModel.js      # AI model management
+│   │   ├── contact.js      # Contact management
+│   │   ├── messageTemplate.js # Template management
+│   │   ├── scheduledMessage.js # Schedule management
+│   │   ├── settings.js     # Settings management
+│   │   └── whatsapp.js     # WhatsApp operations
 │   ├── services/           # Business logic
 │   │   ├── ai/             # AI model integrations
+│   │   │   └── aiService.js # AI service implementation
 │   │   ├── scheduler/      # Message scheduling
+│   │   │   └── scheduler.js # Scheduler implementation
 │   │   └── whatsapp/       # WhatsApp integration
-│   ├── utils/              # Utility functions
+│   │       ├── client.js   # WhatsApp client setup
+│   │       └── messageHandler.js # Message processing
 │   └── index.js            # Entry point
-├── client/                 # Frontend code
-├── .env                    # Environment variables
+├── client/                 # Frontend code (React application) - Coming soon
+├── .env.example            # Environment variables example
 └── package.json            # Dependencies
 ```
+
+## 🔮 Coming Next
+
+- **Frontend Web Interface**: A React-based UI for easy management
+- **Mobile App**: Android/iOS app for on-the-go management
+- **Advanced AI Features**: Fine-tuning and personalization
+- **Image/Media Responses**: Support for multimedia replies
+- **Analytics Dashboard**: Track conversation metrics
+
+## 💻 API Endpoints
+
+### WhatsApp
+
+- `GET /api/whatsapp/status` - Get WhatsApp connection status
+- `GET /api/whatsapp/contacts` - Get all contacts
+- `PUT /api/whatsapp/contacts/:id` - Update contact settings
+- `GET /api/whatsapp/sync-contacts` - Sync WhatsApp contacts
+- `GET /api/whatsapp/chat-history/:id` - Get chat history for a contact
+- `POST /api/whatsapp/send-message` - Send a message to a contact
+- `POST /api/whatsapp/logout` - Log out of WhatsApp
+
+### Contacts
+
+- `GET /api/contacts` - Get all contacts
+- `GET /api/contacts/:id` - Get a contact by ID
+- `PUT /api/contacts/:id` - Update a contact
+- `POST /api/contacts/:id/toggle` - Toggle a contact's enabled status
+- `GET /api/contacts/:id/chat-history` - Get chat history for a contact
+- `GET /api/contacts/:id/stats` - Get chat statistics for a contact
+
+### AI Models
+
+- `GET /api/ai-models` - Get all available AI models
+- `GET /api/ai-models/active` - Get the active AI model
+- `PUT /api/ai-models/active` - Set the active AI model
+- `GET /api/ai-models/providers` - Get all available AI providers
+- `PUT /api/ai-models/local-settings` - Update local AI settings
+
+### Message Templates
+
+- `GET /api/message-templates` - Get all message templates
+- `GET /api/message-templates/:id` - Get a message template by ID
+- `POST /api/message-templates` - Create a new message template
+- `PUT /api/message-templates/:id` - Update a message template
+- `DELETE /api/message-templates/:id` - Delete a message template
+- `POST /api/message-templates/:id/toggle` - Toggle a template active/inactive
+
+### Scheduled Messages
+
+- `GET /api/scheduled-messages` - Get all scheduled messages
+- `GET /api/scheduled-messages/:id` - Get a scheduled message by ID
+- `POST /api/scheduled-messages` - Create a new scheduled message
+- `PUT /api/scheduled-messages/:id` - Update a scheduled message
+- `DELETE /api/scheduled-messages/:id` - Delete a scheduled message
+- `POST /api/scheduled-messages/:id/toggle` - Toggle a scheduled message active/inactive
+
+### Settings
+
+- `GET /api/settings` - Get application settings
+- `PUT /api/settings` - Update application settings
+- `GET /api/settings/message-modes` - Get available message modes
+- `GET /api/settings/system-status` - Get system status information
+- `POST /api/settings/reset` - Reset application settings to defaults
 
 ## 📝 License
 
