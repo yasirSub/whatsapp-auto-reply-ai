@@ -1,100 +1,228 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
-// Layout
+// Context Providers
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { WhatsAppProvider } from './contexts/WhatsAppContext';
+import { SettingsProvider } from './contexts/SettingsContext';
+import { AIProvider } from './contexts/AIContext';
+
+// Layout Component
 import Layout from './components/Layout/Layout';
 
 // Pages
 import Dashboard from './pages/Dashboard';
-import Contacts from './pages/Contacts';
-import ContactDetail from './pages/ContactDetail';
-import MessageTemplates from './pages/MessageTemplates';
-import AISettings from './pages/AISettings';
-import ScheduledMessages from './pages/ScheduledMessages';
-import Settings from './pages/Settings';
-import Login from './pages/Login';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
+import WhatsAppSetup from './pages/WhatsApp/WhatsAppSetup';
+import Contacts from './pages/WhatsApp/Contacts';
+import ContactDetail from './pages/WhatsApp/ContactDetail';
+import AITemplates from './pages/AI/AITemplates';
+import AIMemories from './pages/AI/AIMemories';
+import Settings from './pages/Settings/Settings';
+import AISettings from './pages/Settings/AISettings';
+import Profile from './pages/Profile/Profile';
+import NotFound from './pages/NotFound';
 
-// Contexts
-import { AuthProvider } from './contexts/AuthContext';
-import { SettingsProvider } from './contexts/SettingsContext';
-import { WhatsAppProvider } from './contexts/WhatsAppContext';
-
-// Create query client
-const queryClient = new QueryClient();
-
-// Theme
+// Create theme
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#25D366', // WhatsApp green
-      contrastText: '#fff',
+      main: '#25d366', // WhatsApp green
     },
     secondary: {
-      main: '#34B7F1', // WhatsApp blue
+      main: '#128c7e', // Darker WhatsApp green
     },
     background: {
-      default: '#f0f2f5',
-      paper: '#fff',
+      default: '#f0f2f5', // WhatsApp light gray background
     },
   },
   typography: {
-    fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+    ].join(','),
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 20,
           textTransform: 'none',
-          fontWeight: 600,
         },
       },
     },
-    MuiCard: {
+    MuiPaper: {
       styleOverrides: {
         root: {
           borderRadius: 8,
-          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.05)',
         },
       },
     },
   },
 });
 
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  // If auth is still loading, return nothing
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
+  // If not authenticated, redirect to login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  // Otherwise, render the children
+  return children;
+};
+
+function AppContent() {
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+        {/* Protected Routes */}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/whatsapp/setup" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <WhatsAppSetup />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/whatsapp/contacts" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Contacts />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/whatsapp/contacts/:id" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ContactDetail />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/ai/templates" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AITemplates />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/ai/memories" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AIMemories />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Settings />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings/ai" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AISettings />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Profile />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Catch-all route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+}
+
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={3}>
-          <CssBaseline />
-          <AuthProvider>
-            <SettingsProvider>
-              <WhatsAppProvider>
-                <Router>
-                  <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/" element={<Layout />}>
-                      <Route index element={<Dashboard />} />
-                      <Route path="contacts" element={<Contacts />} />
-                      <Route path="contacts/:id" element={<ContactDetail />} />
-                      <Route path="templates" element={<MessageTemplates />} />
-                      <Route path="ai-settings" element={<AISettings />} />
-                      <Route path="scheduled" element={<ScheduledMessages />} />
-                      <Route path="settings" element={<Settings />} />
-                    </Route>
-                  </Routes>
-                </Router>
-              </WhatsAppProvider>
-            </SettingsProvider>
-          </AuthProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <SnackbarProvider 
+        maxSnack={3} 
+        autoHideDuration={3000}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+      >
+        <AuthProvider>
+          <SettingsProvider>
+            <WhatsAppProvider>
+              <AIProvider>
+                <AppContent />
+              </AIProvider>
+            </WhatsAppProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
   );
 }
 
